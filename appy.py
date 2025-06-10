@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import plotly as py
+import plotly.express as px
 
 # -------------------------------
 # Judul dan deskripsi dashboard
