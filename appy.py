@@ -12,7 +12,7 @@ Dashboard ini menyajikan data dan insight untuk mendukung pengambilan keputusan 
 """)
 
 # -------------------------------
-# Data dummy untuk simulasi
+# Data dummy
 # -------------------------------
 data = {
     "Bulan": ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun"],
@@ -25,36 +25,40 @@ data = {
 df = pd.DataFrame(data)
 
 # -------------------------------
-# Sidebar filter (opsional)
+# Sidebar filter
 # -------------------------------
 st.sidebar.header("Filter Data")
-bulan_terpilih = st.sidebar.multiselect("Pilih Bulan", options=df["Bulan"], default=df["Bulan"])
+bulan_terpilih = st.sidebar.multiselect(
+    "Pilih Bulan", options=df["Bulan"].unique(), default=list(df["Bulan"])
+)
 
-df_filtered = df[df["Bulan"].isin(bulan_terpilih)]
+# Filter data
+if bulan_terpilih:
+    df_filtered = df[df["Bulan"].isin(bulan_terpilih)]
 
-# -------------------------------
-# Visualisasi interaktif
-# -------------------------------
-col1, col2 = st.columns(2)
+    # -------------------------------
+    # Visualisasi interaktif
+    # -------------------------------
+    col1, col2 = st.columns(2)
 
-with col1:
-    st.subheader("📈 Pertumbuhan Pengguna & UMKM")
-    fig1 = px.line(df_filtered, x="Bulan", y=["Pengguna Baru", "UMKM Aktif"],
-                   markers=True, labels={"value": "Jumlah", "variable": "Kategori"})
-    st.plotly_chart(fig1, use_container_width=True)
+    with col1:
+        st.subheader("📈 Pertumbuhan Pengguna & UMKM")
+        fig1 = px.line(df_filtered, x="Bulan", y=["Pengguna Baru", "UMKM Aktif"],
+                       markers=True, labels={"value": "Jumlah", "variable": "Kategori"})
+        st.plotly_chart(fig1, use_container_width=True)
 
-with col2:
-    st.subheader("🛍️ Produk Terjual & Edukasi")
-    fig2 = px.bar(df_filtered, x="Bulan", y=["Produk Terjual", "Edukasi Terselenggara"],
-                  barmode="group", labels={"value": "Jumlah", "variable": "Kategori"})
-    st.plotly_chart(fig2, use_container_width=True)
+    with col2:
+        st.subheader("🛍️ Produk Terjual & Edukasi")
+        fig2 = px.bar(df_filtered, x="Bulan", y=["Produk Terjual", "Edukasi Terselenggara"],
+                      barmode="group", labels={"value": "Jumlah", "variable": "Kategori"})
+        st.plotly_chart(fig2, use_container_width=True)
 
-st.subheader("🌍 Dampak Ekonomi Sirkular (CO2)")
-fig3 = px.area(df_filtered, x="Bulan", y="Ton CO2 Dikurangi", color_discrete_sequence=["green"])
-st.plotly_chart(fig3, use_container_width=True)
+    st.subheader("🌍 Dampak Ekonomi Sirkular (CO2)")
+    fig3 = px.area(df_filtered, x="Bulan", y="Ton CO2 Dikurangi", color_discrete_sequence=["green"])
+    st.plotly_chart(fig3, use_container_width=True)
 
-# -------------------------------
-# Tampilkan data mentah
-# -------------------------------
-with st.expander("📄 Lihat Data Mentah"):
-    st.dataframe(df_filtered)
+    with st.expander("📄 Lihat Data Mentah"):
+        st.dataframe(df_filtered)
+
+else:
+    st.warning("Silakan pilih setidaknya satu bulan untuk menampilkan data dashboard.")
